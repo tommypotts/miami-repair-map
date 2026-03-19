@@ -1,34 +1,38 @@
 // --- 1. INITIALIZE MAP & GLOBALS ---
+// We create the map instance first
 const map = L.map('map').setView([25.7617, -80.1918], 13);
 
-// We define these ONCE at the very top
+// We define the Tile Layer and assign it to a global window variable
 window.baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap © CARTO'
 }).addTo(map);
 
+// Initialize the Marker Cluster Group
 let markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// --- 2. THEME PERSISTENCE ---
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark-mode');
-  window.baseTileLayer.setUrl('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png');
-  setTimeout(() => {
-    const btn = document.getElementById('theme-btn');
-    if (btn) btn.innerText = "☀️";
-  }, 100);
-}
-
-// --- 3. SUPABASE SETUP (ONLY ONCE!) ---
+// --- 2. SUPABASE SETUP (ONLY ONCE) ---
 const supabaseUrl = 'https://jvvatviytlmyxzdnxoay.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2dmF0dml5dGxteXh6ZG54b2F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTE0MjAsImV4cCI6MjA4OTQyNzQyMH0.a1vPFzsHoofF5IyTX68eGZ9fpdRxK2vsmqXmS72g7ko';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// --- 4. ICON LOGIC ---
+// --- 3. THEME PERSISTENCE ---
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  window.baseTileLayer.setUrl('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png');
+  // Wait for the UI to be ready before updating the button icon
+  setTimeout(() => {
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) themeBtn.innerText = "☀️";
+  }, 200);
+}
+
+// --- 4. DYNAMIC MARKER ICONS ---
 function getIcon(category, isMobile) {
   let color = 'blue';
-  if (isMobile) { color = 'grey'; } 
-  else {
+  if (isMobile) {
+    color = 'grey';
+  } else {
     const cat = category ? category.toLowerCase() : 'other';
     if (cat === 'electronics') color = 'red';
     else if (cat === 'appliances') color = 'orange';
@@ -54,17 +58,17 @@ async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
   const countDisplay = document.getElementById('repair-count');
 
+  // Show the loader immediately
   if (loader) {
     loader.style.display = 'flex';
     loader.classList.remove('fade-out');
   }
   
   try {
-    // FIXED: Safety check for MarkerClusterGroup
-    if (markerClusterGroup) {
-      markerClusterGroup.clearLayers();
-    }
+    // Clear old pins
+    markerClusterGroup.clearLayers();
 
+    // Fetch from Supabase
     let query = supabaseClient
       .from('repair_services')
       .select('*')
@@ -77,8 +81,12 @@ async function loadMarkers(categoryFilter = 'All') {
     const { data, error } = await query;
     if (error) throw error;
 
-    if (countDisplay) { countDisplay.innerText = data.length; }
+    // Update the Repair Counter
+    if (countDisplay) {
+      countDisplay.innerText = data.length;
+    }
 
+    // Map each shop to a marker
     data.forEach(shop => {
       if (shop.lat && shop.long) {
         const mobileBadge = shop.is_mobile 
@@ -112,8 +120,9 @@ async function loadMarkers(categoryFilter = 'All') {
     });
 
   } catch (err) {
-    console.error("Marker Loading Error:", err.message);
+    console.error("Marker Error:", err.message);
   } finally {
+    // THE SAFETY VALVE: Loader always hides
     if (loader) {
       loader.classList.add('fade-out');
       setTimeout(() => { loader.style.display = 'none'; }, 500);
@@ -121,7 +130,7 @@ async function loadMarkers(categoryFilter = 'All') {
   }
 }
 
-// --- 6. UI FUNCTIONS ---
+// --- 6. UI & UTILITY ---
 function filterCategory(cat) {
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => btn.classList.remove('active'));
@@ -136,14 +145,6 @@ function toggleForm() {
   if (form) form.classList.toggle('hidden');
 }
 
-function locateUser() {
-  map.locate({ setView: true, maxZoom: 16 });
-}
-
-map.on('locationfound', (e) => {
-  L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
-});
-
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark-mode');
   const themeBtn = document.getElementById('theme-btn');
@@ -156,6 +157,14 @@ function toggleDarkMode() {
   if (window.baseTileLayer) window.baseTileLayer.setUrl(tiles);
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
+
+function locateUser() {
+  map.locate({ setView: true, maxZoom: 16 });
+}
+
+map.on('locationfound', (e) => {
+  L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
+});
 
 async function submitService() {
   const name = document.getElementById('shopName').value;
@@ -179,9 +188,12 @@ async function submitService() {
     alert("Sent for approval!");
     toggleForm();
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("Submission Error: " + err.message);
   }
 }
 
-// INITIAL STARTUP
-loadMarkers();
+// --- 7. STARTUP SEQUENCE ---
+// Wait for the map to be ready before fetching markers to avoid zoom errors
+map.whenReady(() => {
+  loadMarkers();
+});
