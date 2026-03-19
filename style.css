@@ -222,3 +222,12 @@ body {
   #site-header h1 { font-size: 18px; }
   #map-tools { right: 15px; bottom: 15px; }
 }
+
+.leaflet-control-geocoder {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 210px !important;
+  right: 30px !important;
+  left: auto !important;
+  margin: 0 !important;
+}
