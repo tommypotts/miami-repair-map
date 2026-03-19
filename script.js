@@ -190,5 +190,29 @@ function toggleForm() {
   }
 }
 
+// --- 7. GEOLOCATION FUNCTIONS ---
+
+function locateUser() {
+  // This triggers the browser's "Allow Location Access" popup
+  map.locate({ setView: true, maxZoom: 16 });
+}
+
+// What happens when the location is found
+map.on('locationfound', function(e) {
+  const radius = e.accuracy / 2;
+
+  // Add a marker to show where the user is
+  L.marker(e.latlng).addTo(map)
+    .bindPopup("You are within " + radius.toFixed(0) + " meters of this point").openPopup();
+
+  // Add a blue circle to show the 'accuracy' zone
+  L.circle(e.latlng, radius).addTo(map);
+});
+
+// What happens if the user says "No" or it fails
+map.on('locationerror', function(e) {
+  alert("Location access denied. Please enable GPS to find shops near you!");
+});
+
 // Start the data load on startup
 loadMarkers();
