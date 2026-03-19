@@ -122,7 +122,7 @@ async function loadMarkers(categoryFilter = 'All') {
     } catch (err) {
     console.error("Marker Error:", err.message);
     alert("Failed to load markers: " + err.message); // temporary debug
-  } finally {{
+  } finally {
     // THE SAFETY VALVE: Loader always hides
     if (loader) {
       loader.classList.add('fade-out');
