@@ -1,4 +1,39 @@
 /* --- 1. GLOBAL LAYOUT --- */
+
+:root {
+  --bg-color: #f0f0f0;
+  --header-bg: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --card-bg: #ffffff;
+  --border-color: #eee;
+}
+
+/* When the 'dark-mode' class is added to the body, these take over */
+body.dark-mode {
+  --bg-color: #1a1a1a;
+  --header-bg: #2c3e50;
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --card-bg: #2c3e50;
+  --border-color: #444;
+}
+
+/* Update your existing styles to use these variables */
+body {
+  background: var(--bg-color);
+  color: var(--text-primary);
+}
+
+#site-header, #filter-bar, .form-content, #legend {
+  background: var(--header-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+#site-header p, .form-content p {
+  color: var(--text-secondary);
+}
 body, html {
   margin: 0;
   padding: 0;
