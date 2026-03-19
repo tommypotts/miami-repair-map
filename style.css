@@ -231,3 +231,12 @@ body {
   left: auto !important;
   margin: 0 !important;
 }
+
+.leaflet-top.leaflet-right .leaflet-control-geocoder {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 210px !important;
+  right: 30px !important;
+  left: auto !important;
+  margin: 0 !important;
+}
