@@ -61,6 +61,9 @@ map.addLayer(markerClusterGroup);
 
 // --- 4. DATA LOADING ---
 async function loadMarkers(categoryFilter = 'All') {
+  const loader = document.getElementById('loader-container');
+  if (loader) loader.classList.remove('fade-out');
+  
   markerClusterGroup.clearLayers();
 
   let query = supabaseClient
@@ -110,6 +113,11 @@ async function loadMarkers(categoryFilter = 'All') {
 
       markerClusterGroup.addLayer(marker);
     }
+    if (loader) {
+    loader.classList.add('fade-out');
+    // Optional: Remove it from the DOM entirely after the fade animation
+    setTimeout(() => { loader.style.display = 'none'; }, 500);
+  }
   });
 }
 
