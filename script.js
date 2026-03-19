@@ -110,14 +110,19 @@ async function loadMarkers(categoryFilter = 'All') {
 
 // Function to handle the button clicks
 function filterCategory(cat) {
-  // Update the 'active' button styling
+  // 1. Update the 'active' button styling
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => btn.classList.remove('active'));
   
-  // Find the button that was clicked and add 'active' class
-  event.target.classList.add('active');
+  // 2. Find the specific button that was clicked based on its text
+  // This is safer than relying on 'event.target'
+  buttons.forEach(btn => {
+    if (btn.innerText === cat || (cat === 'All' && btn.innerText === 'All')) {
+      btn.classList.add('active');
+    }
+  });
 
-  // Reload the markers with the filter
+  // 3. Reload the markers with the filter
   loadMarkers(cat);
 }
 
