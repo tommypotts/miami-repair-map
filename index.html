@@ -3,7 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miami Repair Map</title>
+  
+  <title>Miami Repair Map | Circular Economy Tool</title>
+  <meta name="title" content="Miami Repair Map | Circular Economy Tool">
+  <meta name="description" content="Find local fixers and mobile repair services in Miami. Help keep waste out of landfills and grow our local circular economy.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tommypotts.github.io/miami-repair-map/">
+  <meta property="og:title" content="Miami Repair Map | Find Local Fixers">
+  <meta property="og:description" content="Don't toss it—fix it! Explore an interactive map of Miami's repair shops.">
+  <meta property="og:image" content="https://tommypotts.github.io/miami-repair-map/map-preview.png">
+
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://tommypotts.github.io/miami-repair-map/">
+  <meta property="twitter:title" content="Miami Repair Map | Find Local Fixers">
+  <meta property="twitter:description" content="An interactive tool for Miami's circular economy.">
+  <meta property="twitter:image" content="https://tommypotts.github.io/miami-repair-map/map-preview.png">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -17,24 +32,104 @@
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <link rel="manifest" href="site.webmanifest" />
-
-  <title>Miami Repair Map | Circular Economy Tool</title>
-  <meta name="title" content="Miami Repair Map | Circular Economy Tool">
-  <meta name="description" content="Find local fixers and mobile repair services in Miami. Help keep waste out of landfills and grow our local circular economy.">
-
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://tommypotts.github.io/miami-repair-map/">
-  <meta property="og:title" content="Miami Repair Map | Find Local Fixers">
-  <meta property="og:description" content="Don't toss it—fix it! Explore an interactive map of Miami's repair shops and mobile mechanics.">
-  <meta property="og:image" content="https://tommypotts.github.io/miami-repair-map/map-preview.png">
-
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://tommypotts.github.io/miami-repair-map/">
-  <meta property="twitter:title" content="Miami Repair Map | Find Local Fixers">
-  <meta property="twitter:description" content="An interactive tool for Miami's circular economy. Find shops for electronics, clothing, furniture, and more.">
-  <meta property="twitter:image" content="https://tommypotts.github.io/miami-repair-map/map-preview.png">
-  </head>
+</head>
 <body>
+
+  <div id="loader-container">
+    <div class="spinner"></div>
+    <p>Loading Miami Fixers...</p>
+  </div>
+
+  <header id="site-header">
+    <div class="header-content">
+      <h1>Miami Repair Map</h1>
+      <p>Find <span id="repair-count">...</span> local fixers and keep items out of landfills. Help grow our circular economy!</p>
+    </div>
+  </header>
+
+  <div id="filter-bar">
+    <button class="filter-btn active" onclick="filterCategory('All')">All</button>
+    <button class="filter-btn" onclick="filterCategory('Electronics')">Electronics</button>
+    <button class="filter-btn" onclick="filterCategory('Appliances')">Appliances</button>
+    <button class="filter-btn" onclick="filterCategory('Bikes')">Bikes</button>
+    <button class="filter-btn" onclick="filterCategory('Clothing')">Clothing</button>
+    <button class="filter-btn" onclick="filterCategory('Furniture')">Furniture</button>
+    <button class="filter-btn" onclick="filterCategory('Footwear')">Footwear</button>
+    <button class="filter-btn" onclick="filterCategory('Jewelry')">Jewelry</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="legend">
+    <strong>Repair Categories</strong>
+    <div class="legend-item"><i style="background: #e74c3c;"></i> Electronics</div>
+    <div class="legend-item"><i style="background: #f39c12;"></i> Appliances</div>
+    <div class="legend-item"><i style="background: #2b82cb;"></i> Bikes</div>
+    <div class="legend-item"><i style="background: #9b59b6;"></i> Clothing</div>
+    <div class="legend-item"><i style="background: #333333;"></i> Furniture</div> 
+    <div class="legend-item"><i style="background: #2ecc71;"></i> Footwear</div>
+    <div class="legend-item"><i style="background: #f1c40f;"></i> Jewelry</div>
+    <div class="legend-item"><i style="background: #7f8c8d;"></i> Mobile Service</div> 
+    <div class="legend-item"><i style="background: #f1f100;"></i> Other</div> 
+  </div>
+
+  <div id="map-tools">
+    <button id="theme-btn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+    <button id="locate-btn" onclick="locateUser()" title="Find My Location">🎯</button>
+    <button id="add-btn" onclick="toggleForm()" title="Add a Repair Shop">+</button>
+  </div>
+
+  <div id="form-popup" class="hidden">
+    <div class="form-content">
+      <span class="close" onclick="toggleForm()">&times;</span>
+      <h2>Add Repair Service</h2>
+      <p>Help the Miami community find local fixers.</p>
+
+      <form id="repair-form">
+        <div class="input-row">
+          <input type="text" id="shopName" placeholder="Shop Name" required>
+          <select id="shopCategory" required>
+            <option value="" disabled selected>Category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Appliances">Appliances</option>
+            <option value="Bikes">Bikes</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Footwear">Footwear</option>
+            <option value="Jewelry">Jewelry</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="isMobile">
+          <label for="isMobile">This is a mobile/traveling service</label>
+        </div>
+        
+        <input type="text" id="shopAddress" placeholder="Full Address" required>
+
+        <div class="input-row">
+          <input type="text" id="shopPhone" placeholder="Phone (Optional)">
+          <input type="text" id="shopWebsite" placeholder="Website (Optional)">
+        </div>
+
+        <div class="button-group">
+          <button id="cancel-btn" type="button" onclick="toggleForm()">Back</button>
+          <button id="submit-btn" type="button" onclick="submitService()">Submit</button>
+        </div>
+      </form> 
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+  <script src="script.js"></script>
+
+</body>
+</html><body>
 
   <div id="loader-container">
     <div class="spinner"></div>
