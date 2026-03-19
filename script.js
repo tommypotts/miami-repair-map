@@ -59,17 +59,15 @@ function getIcon(category, isMobile) {
 let markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
+// --- 4. DATA LOADING ---
 async function loadMarkers(categoryFilter = 'All') {
-  // 1. Clear existing markers from the map
   markerClusterGroup.clearLayers();
 
-  // 2. Build the Supabase query
   let query = supabaseClient
     .from('repair_services')
     .select('*')
     .eq('is_approved', true);
 
-  // 3. Apply the filter if it's not 'All'
   if (categoryFilter !== 'All') {
     query = query.eq('category', categoryFilter);
   }
@@ -81,7 +79,6 @@ async function loadMarkers(categoryFilter = 'All') {
     return;
   }
 
-  // 4. Draw the markers
   data.forEach(shop => {
     if (shop.lat && shop.long) {
       const mobileBadge = shop.is_mobile 
@@ -89,13 +86,21 @@ async function loadMarkers(categoryFilter = 'All') {
         : '';
 
       const popupContent = `
-        <div style="font-family: sans-serif; color: #333;">
+        <div style="font-family: sans-serif; color: #333; min-width: 180px;">
           ${mobileBadge}<br>
           <strong style="font-size: 16px;">${shop.name}</strong><br>
-          <em style="color: #666;">${shop.category}</em><hr>
-          <p>📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
-          ${shop.phone ? `<p>📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
-          ${shop.website ? `<p>🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
+          <em style="color: #666;">${shop.category}</em><hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+          <p style="margin: 5px 0;">📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
+          ${shop.phone ? `<p style="margin: 5px 0;">📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
+          ${shop.website ? `<p style="margin: 5px 0;">🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
+          
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;">
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.long}" 
+               target="_blank" 
+               style="background: #2ecc71; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; display: block; text-align: center; font-weight: bold; font-size: 12px;">
+               🚗 GET DIRECTIONS
+            </a>
+          </div>
         </div>
       `;
 
