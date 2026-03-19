@@ -1,20 +1,16 @@
 // --- 1. INITIALIZE MAP ---
 const map = L.map('map').setView([25.7617, -80.1918], 13);
 
-// Assign the layer to window.baseTileLayer so the toggle function can find it
 window.baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CARTO'
+  attribution: '© OpenStreetMap © CARTO'
 }).addTo(map);
 
 // --- THE THEME MEMORY CHECK ---
-// Run this immediately to prevent the 'white flash'
 if (localStorage.getItem('theme') === 'dark') {
   document.body.classList.add('dark-mode');
   const darkTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png';
   window.baseTileLayer.setUrl(darkTiles);
   
-  // Update the button icon to a sun since it's already dark
-  // We'll wrap this in a timeout to make sure the HTML is ready
   setTimeout(() => {
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.innerText = "☀️";
@@ -44,12 +40,10 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // --- 3. DYNAMIC MARKER ICONS ---
 function getIcon(category, isMobile) {
   let color = 'blue';
-  
   if (isMobile) {
-    color = 'grey'; // Grey is now strictly for mobile services
+    color = 'grey';
   } else {
     const cat = category ? category.toLowerCase() : 'other';
-    
     if (cat === 'electronics') color = 'red';
     else if (cat === 'appliances') color = 'orange';
     else if (cat === 'bikes') color = 'blue';
@@ -57,7 +51,7 @@ function getIcon(category, isMobile) {
     else if (cat === 'footwear') color = 'green';
     else if (cat === 'jewelry') color = 'gold';   
     else if (cat === 'furniture') color = 'black';
-    else color = 'yellow'; // 'Other' moves to Yellow
+    else color = 'yellow';
   }
 
   return new L.Icon({
@@ -71,15 +65,13 @@ function getIcon(category, isMobile) {
 }
 
 // --- 4. DATA LOADING ---
-// Keep track of the marker group globally so we can clear it
 let markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// --- 4. DATA LOADING ---
 async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
   if (loader) {
-    loader.style.display = 'flex'; // Make sure it's visible while loading
+    loader.style.display = 'flex';
     loader.classList.remove('fade-out');
   }
   
@@ -132,6 +124,7 @@ async function loadMarkers(categoryFilter = 'All') {
       markerClusterGroup.addLayer(marker);
     }
   });
+
   if (loader) {
     loader.classList.add('fade-out');
     setTimeout(() => { 
@@ -140,29 +133,78 @@ async function loadMarkers(categoryFilter = 'All') {
   }
 } 
 
-// Function to handle the button clicks
+// --- 5. UI & FILTER FUNCTIONS ---
 function filterCategory(cat) {
-  // 1. Update the 'active' button styling
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => btn.classList.remove('active'));
   
-  // 2. Find the specific button that was clicked based on its text
-  // This is safer than relying on 'event.target'
   buttons.forEach(btn => {
     if (btn.innerText === cat || (cat === 'All' && btn.innerText === 'All')) {
       btn.classList.add('active');
     }
   });
-
-  // 3. Reload the markers with the filter
   loadMarkers(cat);
 }
 
-// --- 5. FORM SUBMISSION ---
-document.getElementById('repair-form').addEventListener('submit', function(e) {
-  e.preventDefault(); 
-  submitService();   
+function toggleForm() {
+  const form = document.getElementById('form-popup');
+  if (form) form.classList.toggle('hidden');
+}
+
+// --- 6. GEOLOCATION ---
+let userMarker = null;
+let userCircle = null;
+let isLocating = false;
+
+function locateUser() {
+  const locateBtn = document.getElementById('locate-btn');
+  if (isLocating) {
+    if (userMarker) map.removeLayer(userMarker);
+    if (userCircle) map.removeLayer(userCircle);
+    isLocating = false;
+    locateBtn.style.background = "var(--header-bg)";
+    locateBtn.innerText = "🎯";
+    map.setView([25.7617, -80.1918], 13); 
+  } else {
+    map.locate({ setView: true, maxZoom: 16 });
+  }
+}
+
+map.on('locationfound', function(e) {
+  const radius = e.accuracy / 2;
+  const locateBtn = document.getElementById('locate-btn');
+  if (userMarker) map.removeLayer(userMarker);
+  if (userCircle) map.removeLayer(userCircle);
+
+  userMarker = L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
+  userCircle = L.circle(e.latlng, radius).addTo(map);
+
+  isLocating = true;
+  locateBtn.style.background = "#2ecc71";
+  locateBtn.style.color = "white";
 });
+
+map.on('locationerror', function() {
+  isLocating = false;
+  alert("Location access denied.");
+});
+
+// --- 7. THEME & SUBMISSION ---
+function toggleDarkMode() {
+  const body = document.body;
+  const themeBtn = document.getElementById('theme-btn');
+  body.classList.toggle('dark-mode');
+  const isDark = body.classList.contains('dark-mode');
+  themeBtn.innerText = isDark ? "☀️" : "🌙";
+
+  const darkTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png';
+  const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  
+  if (window.baseTileLayer) {
+    window.baseTileLayer.setUrl(isDark ? darkTiles : lightTiles);
+  }
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
 
 async function submitService() {
   const name = document.getElementById('shopName').value;
@@ -170,7 +212,7 @@ async function submitService() {
   const address = document.getElementById('shopAddress').value;
   const phone = document.getElementById('shopPhone').value;
   const website = document.getElementById('shopWebsite').value;
-  const isMobile = document.getElementById('isMobile').checked; // Capturing the checkbox
+  const isMobile = document.getElementById('isMobile').checked;
 
   if (!name || !address) {
     alert("Please enter a name and an address!");
@@ -182,7 +224,6 @@ async function submitService() {
   try {
     const response = await fetch(geoUrl);
     const geoData = await response.json();
-
     if (geoData.length === 0) {
       alert("We couldn't find that address!");
       return;
@@ -191,21 +232,15 @@ async function submitService() {
     const { error } = await supabaseClient
       .from('repair_services')
       .insert([{
-        name: name,
-        category: category,
-        address: address,
-        phone: phone,
-        website: website,
-        is_mobile: isMobile, // Saving to Supabase
+        name, category, address, phone, website,
+        is_mobile: isMobile,
         lat: geoData[0].lat,
         long: geoData[0].lon,
         is_approved: false
       }]);
 
     if (error) throw error;
-
     alert("Success! Your submission has been sent for approval.");
-    
     document.getElementById('repair-form').reset(); 
     toggleForm();
   } catch (err) {
@@ -214,93 +249,5 @@ async function submitService() {
   }
 }
 
-// --- 6. UI FUNCTIONS ---
-function toggleForm() {
-  const form = document.getElementById('form-popup');
-  if (form) {
-    form.classList.toggle('hidden');
-  }
-}
-
-// --- 7. GEOLOCATION FUNCTIONS ---
-
-// We create these variables at the top so the whole script can "see" them
-let userMarker = null;
-let userCircle = null;
-let isLocating = false;
-
-function locateUser() {
-  const locateBtn = document.getElementById('locate-btn');
-
-  if (isLocating) {
-    // --- TOGGLE OFF ---
-    if (userMarker) map.removeLayer(userMarker);
-    if (userCircle) map.removeLayer(userCircle);
-    
-    isLocating = false;
-    locateBtn.style.background = "white"; // Reset button color
-    locateBtn.innerText = "🎯"; // Reset icon
-    
-    // Optional: Fly back to the main Miami view
-    map.setView([25.7617, -80.1918], 13); 
-  } else {
-    // --- TOGGLE ON ---
-    map.locate({ setView: true, maxZoom: 16 });
-    // Note: 'isLocating' becomes true inside the 'locationfound' event below
-  }
-}
-
-map.on('locationfound', function(e) {
-  const radius = e.accuracy / 2;
-  const locateBtn = document.getElementById('locate-btn');
-
-  // If a marker already exists (from a previous click), remove it first
-  if (userMarker) map.removeLayer(userMarker);
-  if (userCircle) map.removeLayer(userCircle);
-
-  // Create the new marker and circle
-  userMarker = L.marker(e.latlng).addTo(map)
-    .bindPopup("You are here").openPopup();
-    
-  userCircle = L.circle(e.latlng, radius).addTo(map);
-
-  // Update State
-  isLocating = true;
-  locateBtn.style.background = "#2ecc71"; // Turn button green to show it's "Active"
-  locateBtn.style.color = "white";
-});
-
-map.on('locationerror', function(e) {
-  isLocating = false;
-  alert("Location access denied. Please enable GPS to find shops near you!");
-});
-
-// --- 8. DARK MODE LOGIC ---
-
-function toggleDarkMode() {
-  const body = document.body;
-  const themeBtn = document.getElementById('theme-btn');
-  
-  body.classList.toggle('dark-mode');
-  
-  // 1. Check if we are now in dark mode
-  const isDark = body.classList.contains('dark-mode');
-  
-  // 2. Update the button icon
-  themeBtn.innerText = isDark ? "☀️" : "🌙";
-
-  // 3. SWAP THE MAP TILES
-  // CartoDB has a perfect 'Dark Matter' version of your Voyager tiles
-  const darkTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png';
-  const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-  
-  // 'mapLayer' needs to be defined globally so we can change its URL
-  if (window.baseTileLayer) {
-    window.baseTileLayer.setUrl(isDark ? darkTiles : lightTiles);
-  }
-
-  // 4. SAVE PREFERENCE (Local Storage)
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
 // Start the data load on startup
 loadMarkers();
