@@ -72,70 +72,77 @@ async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
   const countDisplay = document.getElementById('repair-count');
 
+  // 1. Show the loader immediately
   if (loader) {
     loader.style.display = 'flex';
     loader.classList.remove('fade-out');
   }
   
-  markerClusterGroup.clearLayers();
+  try {
+    markerClusterGroup.clearLayers();
 
-  let query = supabaseClient
-    .from('repair_services')
-    .select('*')
-    .eq('is_approved', true);
+    // 2. Fetch from Supabase
+    let query = supabaseClient
+      .from('repair_services')
+      .select('*')
+      .eq('is_approved', true);
 
-  if (categoryFilter !== 'All') {
-    query = query.eq('category', categoryFilter);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error("Database Error:", error.message);
-    if (countDisplay) countDisplay.innerText = "0";
-    return;
-  }
-
-  // Update Counter
-  if (countDisplay) {
-    countDisplay.innerText = data.length;
-  }
-
-  data.forEach(shop => {
-    if (shop.lat && shop.long) {
-      const mobileBadge = shop.is_mobile 
-        ? `<span style="background: #34495e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block; margin-bottom: 5px;">MOBILE SERVICE</span>` 
-        : '';
-
-      const popupContent = `
-        <div style="font-family: sans-serif; color: #333; min-width: 180px;">
-          ${mobileBadge}<br>
-          <strong style="font-size: 16px;">${shop.name}</strong><br>
-          <em style="color: #666;">${shop.category}</em><hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
-          <p style="margin: 5px 0;">📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
-          ${shop.phone ? `<p style="margin: 5px 0;">📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
-          ${shop.website ? `<p style="margin: 5px 0;">🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;">
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.long}" 
-               target="_blank" 
-               style="background: #2ecc71; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; display: block; text-align: center; font-weight: bold; font-size: 12px;">
-               🚗 GET DIRECTIONS
-            </a>
-          </div>
-        </div>
-      `;
-
-      const marker = L.marker([shop.lat, shop.long], { 
-        icon: getIcon(shop.category, shop.is_mobile) 
-      }).bindPopup(popupContent);
-
-      markerClusterGroup.addLayer(marker);
+    if (categoryFilter !== 'All') {
+      query = query.eq('category', categoryFilter);
     }
-  });
 
-  if (loader) {
-    loader.classList.add('fade-out');
-    setTimeout(() => { loader.style.display = 'none'; }, 500);
+    const { data, error } = await query;
+
+    if (error) throw error; // Jump straight to the catch block if DB fails
+
+    // 3. Update the Counter
+    if (countDisplay) {
+      countDisplay.innerText = data.length;
+    }
+
+    // 4. Create the Markers
+    data.forEach(shop => {
+      if (shop.lat && shop.long) {
+        const mobileBadge = shop.is_mobile 
+          ? `<span style="background: #34495e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block; margin-bottom: 5px;">MOBILE SERVICE</span>` 
+          : '';
+
+        const popupContent = `
+          <div style="font-family: sans-serif; color: #333; min-width: 180px;">
+            ${mobileBadge}<br>
+            <strong style="font-size: 16px;">${shop.name}</strong><br>
+            <em style="color: #666;">${shop.category}</em><hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+            <p style="margin: 5px 0;">📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
+            ${shop.phone ? `<p style="margin: 5px 0;">📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
+            ${shop.website ? `<p style="margin: 5px 0;">🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
+            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.long}" 
+                 target="_blank" 
+                 style="background: #2ecc71; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; display: block; text-align: center; font-weight: bold; font-size: 12px;">
+                 🚗 GET DIRECTIONS
+              </a>
+            </div>
+          </div>
+        `;
+
+        const marker = L.marker([shop.lat, shop.long], { 
+          icon: getIcon(shop.category, shop.is_mobile) 
+        }).bindPopup(popupContent);
+
+        markerClusterGroup.addLayer(marker);
+      }
+    });
+
+  } catch (err) {
+    console.error("Map Loading Error:", err.message);
+  } finally {
+    // Even if the code crashes, the spinner WILL hide.
+    if (loader) {
+      loader.classList.add('fade-out');
+      setTimeout(() => { 
+        loader.style.display = 'none'; 
+      }, 500);
+    }
   }
 }
 
