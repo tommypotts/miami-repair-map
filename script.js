@@ -92,6 +92,12 @@ async function loadMarkers(categoryFilter = 'All') {
     console.error("Database Error:", error.message);
     return;
   }
+  
+  const countDisplay = document.getElementById('repair-count');
+  if (countDisplay) {
+    // We use data.length to get the total number of items returned
+    countDisplay.innerText = data.length;
+  }
 
   data.forEach(shop => {
     if (shop.lat && shop.long) {
