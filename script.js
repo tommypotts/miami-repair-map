@@ -84,6 +84,11 @@ async function loadMarkers() {
 }
 
 // --- 5. FORM SUBMISSION ---
+document.getElementById('repair-form').addEventListener('submit', function(e) {
+  e.preventDefault(); 
+  submitService();   
+});
+
 async function submitService() {
   const name = document.getElementById('shopName').value;
   const category = document.getElementById('shopCategory').value;
@@ -123,6 +128,9 @@ async function submitService() {
     if (error) throw error;
 
     alert("Success! Your submission has been sent for approval.");
+    
+    document.getElementById('repair-form').reset(); 
+    
     toggleForm();
   } catch (err) {
     console.error(err);
