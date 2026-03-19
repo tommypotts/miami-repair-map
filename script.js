@@ -70,7 +70,7 @@ map.addLayer(markerClusterGroup);
 
 async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
-  const countDisplay = document.getElementById('repair-count'); // The "Target"
+  const countDisplay = document.getElementById('repair-count');
 
   if (loader) {
     loader.style.display = 'flex';
@@ -92,18 +92,40 @@ async function loadMarkers(categoryFilter = 'All') {
 
   if (error) {
     console.error("Database Error:", error.message);
-    if (countDisplay) countDisplay.innerText = "0"; // Show 0 if there's an error
+    if (countDisplay) countDisplay.innerText = "0";
     return;
   }
 
   // --- THE COUNTER LOGIC ---
   if (countDisplay) {
-    countDisplay.innerText = data.length; // Updates '...' to the actual number
+    countDisplay.innerText = data.length;
   }
 
   data.forEach(shop => {
     if (shop.lat && shop.long) {
-      // ... (Your existing marker/popup logic stays here) ...
+      // Construction of the Popup Content
+      const mobileBadge = shop.is_mobile 
+        ? `<span style="background: #34495e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block; margin-bottom: 5px;">MOBILE SERVICE</span>` 
+        : '';
+
+      const popupContent = `
+        <div style="font-family: sans-serif; color: #333; min-width: 180px;">
+          ${mobileBadge}<br>
+          <strong style="font-size: 16px;">${shop.name}</strong><br>
+          <em style="color: #666;">${shop.category}</em><hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+          <p style="margin: 5px 0;">📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
+          ${shop.phone ? `<p style="margin: 5px 0;">📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
+          ${shop.website ? `<p style="margin: 5px 0;">🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;">
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.long}" 
+               target="_blank" 
+               style="background: #2ecc71; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; display: block; text-align: center; font-weight: bold; font-size: 12px;">
+               🚗 GET DIRECTIONS
+            </a>
+          </div>
+        </div>
+      `;
+
       const marker = L.marker([shop.lat, shop.long], { 
         icon: getIcon(shop.category, shop.is_mobile) 
       }).bindPopup(popupContent);
@@ -234,5 +256,5 @@ async function submitService() {
   }
 }
 
-// Start the data load on startup
+// Start initial load
 loadMarkers();
