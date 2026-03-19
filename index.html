@@ -40,30 +40,32 @@
       <span class="close" onclick="toggleForm()">&times;</span>
       <h2>Add Repair Service</h2>
       <p>Help the Miami community find local fixers.</p>
-      
-      <input type="text" id="shopName" placeholder="Shop Name">
-      
-      <select id="shopCategory">
-        <option value="" disabled selected>Select a Category</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Appliances">Appliances</option>
-        <option value="Bikes">Bikes</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Furniture">Furniture</option>
-        <option value="Footwear">Footwear</option>
-        <option value="Jewelry">Jewelry</option>
-        <option value="Other">Other</option>
-      </select>
 
-      <input type="text" id="shopAddress" placeholder="Full Address">
-      <input type="text" id="shopPhone" placeholder="Phone Number (Optional)">
-      <input type="text" id="shopWebsite" placeholder="Website URL (Optional)">
+      <form id="repair-form">
+        <input type="text" id="shopName" placeholder="Shop Name">
       
-      <div class="button-group">
-        <button id="cancel-btn" type="button" onclick="toggleForm()">Back</button>
-        <button id="submit-btn" type="button" onclick="submitService()">Submit</button>
-      </div>
-    </div> 
+        <select id="shopCategory">
+          <option value="" disabled selected>Select a Category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Appliances">Appliances</option>
+          <option value="Bikes">Bikes</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Footwear">Footwear</option>
+          <option value="Jewelry">Jewelry</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <input type="text" id="shopAddress" placeholder="Full Address">
+        <input type="text" id="shopPhone" placeholder="Phone Number (Optional)">
+        <input type="text" id="shopWebsite" placeholder="Website URL (Optional)">
+      
+        <div class="button-group">
+          <button id="cancel-btn" type="button" onclick="toggleForm()">Back</button>
+          <button id="submit-btn" type="button" onclick="submitService()">Submit</button>
+        </div>
+    </form> 
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
