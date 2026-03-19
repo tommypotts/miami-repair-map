@@ -55,24 +55,33 @@ function getIcon(category, isMobile) {
 }
 
 // --- 4. DATA LOADING ---
-async function loadMarkers() {
-  const { data, error } = await supabaseClient
+// Keep track of the marker group globally so we can clear it
+let markerClusterGroup = L.markerClusterGroup();
+map.addLayer(markerClusterGroup);
+
+async function loadMarkers(categoryFilter = 'All') {
+  // 1. Clear existing markers from the map
+  markerClusterGroup.clearLayers();
+
+  // 2. Build the Supabase query
+  let query = supabaseClient
     .from('repair_services')
     .select('*')
     .eq('is_approved', true);
+
+  // 3. Apply the filter if it's not 'All'
+  if (categoryFilter !== 'All') {
+    query = query.eq('category', categoryFilter);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Database Error:", error.message);
     return;
   }
 
-  // 1. Create a Marker Cluster Group
-  const markers = L.markerClusterGroup({
-    spiderfyOnMaxZoom: true, // This fans them out when you click the cluster
-    showCoverageOnHover: false,
-    zoomToBoundsOnClick: true
-  });
-
+  // 4. Draw the markers
   data.forEach(shop => {
     if (shop.lat && shop.long) {
       const mobileBadge = shop.is_mobile 
@@ -90,17 +99,26 @@ async function loadMarkers() {
         </div>
       `;
 
-      // 2. Create the marker
-      const marker = L.marker([shop.lat, shop.long], { icon: getIcon(shop.category, shop.is_mobile) })
-        .bindPopup(popupContent);
+      const marker = L.marker([shop.lat, shop.long], { 
+        icon: getIcon(shop.category, shop.is_mobile) 
+      }).bindPopup(popupContent);
 
-      // 3. Add the marker to the Cluster Group instead of the map
-      markers.addLayer(marker);
+      markerClusterGroup.addLayer(marker);
     }
   });
+}
 
-  // 4. Finally, add the entire group to the map
-  map.addLayer(markers);
+// Function to handle the button clicks
+function filterCategory(cat) {
+  // Update the 'active' button styling
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  
+  // Find the button that was clicked and add 'active' class
+  event.target.classList.add('active');
+
+  // Reload the markers with the filter
+  loadMarkers(cat);
 }
 
 // --- 5. FORM SUBMISSION ---
