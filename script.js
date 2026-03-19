@@ -5,6 +5,14 @@ window.baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertile
   attribution: '© OpenStreetMap © CARTO'
 }).addTo(map);
 
+L.Control.geocoder({
+  defaultMarkGeocode: false
+})
+.on('markgeocode', function(e) {
+  map.setView(e.geocode.center, 15);
+})
+.addTo(map);
+
 let markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
