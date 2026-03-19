@@ -7,7 +7,7 @@ window.baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertile
 
 L.Control.geocoder({
   defaultMarkGeocode: false,
-  position: 'bottomright'
+  position: 'topleft'
 })
 .on('markgeocode', function(e) {
   map.setView(e.geocode.center, 15);
