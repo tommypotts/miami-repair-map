@@ -256,5 +256,32 @@ map.on('locationerror', function(e) {
   alert("Location access denied. Please enable GPS to find shops near you!");
 });
 
+// --- 8. DARK MODE LOGIC ---
+
+function toggleDarkMode() {
+  const body = document.body;
+  const themeBtn = document.getElementById('theme-btn');
+  
+  body.classList.toggle('dark-mode');
+  
+  // 1. Check if we are now in dark mode
+  const isDark = body.classList.contains('dark-mode');
+  
+  // 2. Update the button icon
+  themeBtn.innerText = isDark ? "☀️" : "🌙";
+
+  // 3. SWAP THE MAP TILES
+  // CartoDB has a perfect 'Dark Matter' version of your Voyager tiles
+  const darkTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png';
+  const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  
+  // 'mapLayer' needs to be defined globally so we can change its URL
+  if (window.baseTileLayer) {
+    window.baseTileLayer.setUrl(isDark ? darkTiles : lightTiles);
+  }
+
+  // 4. SAVE PREFERENCE (Local Storage)
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
 // Start the data load on startup
 loadMarkers();
