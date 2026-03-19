@@ -58,8 +58,8 @@ async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
   const countDisplay = document.getElementById('repair-count');
 
-  // Show the loader immediately
-  if (loader) {
+  // Only show loader if it's not already visible (avoids resetting fade)
+  if (loader && loader.style.display !== 'flex') {
     loader.style.display = 'flex';
     loader.classList.remove('fade-out');
   }
@@ -119,9 +119,10 @@ async function loadMarkers(categoryFilter = 'All') {
       }
     });
 
-  } catch (err) {
+    } catch (err) {
     console.error("Marker Error:", err.message);
-  } finally {
+    alert("Failed to load markers: " + err.message); // temporary debug
+  } finally {{
     // THE SAFETY VALVE: Loader always hides
     if (loader) {
       loader.classList.add('fade-out');
