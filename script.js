@@ -194,7 +194,10 @@ async function submitService() {
 }
 
 // --- 7. STARTUP SEQUENCE ---
-// Wait for the map to be ready before fetching markers to avoid zoom errors
-setTimeout(() => {
+map.on('load', () => {
   loadMarkers();
-}, 300);
+});
+
+if (map._loaded) {
+  loadMarkers();
+}
