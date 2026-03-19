@@ -50,7 +50,7 @@ body {
 /* --- 4. MAP LEGEND --- */
 #legend {
   position: fixed;
-  top: 90px; /* Adjusted to sit below the new header */
+  top: 150px; /* Increased to clear the header + filter bar */
   right: 20px;
   background: white;
   padding: 15px;
