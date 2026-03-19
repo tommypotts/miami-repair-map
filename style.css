@@ -1,4 +1,4 @@
-/* --- 1. GLOBAL LAYOUT --- */
+/* --- 1. THEME VARIABLES --- */
 :root {
   --bg-color: #f0f0f0;
   --header-bg: #ffffff;
@@ -7,45 +7,16 @@
   --border-color: #eee;
 }
 
+/* When the 'dark-mode' class is added to the body, these take over */
 body.dark-mode {
   --bg-color: #1a1a1a;
-  --header-bg: #262626; /* Darker header */
+  --header-bg: #262626; 
   --text-primary: #ecf0f1;
   --text-secondary: #bdc3c7;
   --border-color: #444;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden; 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* USE THE VARIABLES HERE */
-  background: var(--bg-color);
-  color: var(--text-primary);
-}
-
-#site-header {
-  background: var(--header-bg); /* Use variable */
-  padding: 15px 25px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1001;
-  border-bottom: 3px solid #2ecc71;
-}
-
-#filter-bar {
-  background: var(--header-bg); /* Use variable */
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-
-#legend, .form-content {
-  background: var(--header-bg) !important;
-  color: var(--text-primary) !important;
-}
-
+/* --- 2. GLOBAL LAYOUT --- */
 body, html {
   margin: 0;
   padding: 0;
@@ -59,23 +30,24 @@ body {
   height: 100vh;
   overflow: hidden; 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--bg-color);
+  color: var(--text-primary);
+  transition: background 0.3s, color 0.3s; /* Makes the theme swap smooth */
 }
 
-/* --- 2. SITE HEADER --- */
+/* --- 3. SITE HEADER --- */
 #site-header {
-  background: white;
+  background: var(--header-bg);
   padding: 15px 25px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   z-index: 1001;
-  border-bottom: 3px solid #2ecc71; /* Green sustainability accent */
+  border-bottom: 3px solid #2ecc71;
 }
 
 #site-header h1 {
   margin: 0;
   font-size: 22px;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -84,36 +56,57 @@ body {
 #site-header p {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: #7f8c8d;
+  color: var(--text-secondary);
 }
 
-/* --- 3. MAP CONTAINER --- */
+/* --- 4. FILTER BAR --- */
+#filter-bar {
+  padding: 10px;
+  background: var(--header-bg);
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-color);
+  z-index: 1001;
+}
+
+#filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.filter-btn.active {
+  background: #2ecc71;
+  color: white;
+  border-color: #2ecc71;
+}
+
+/* --- 5. MAP & LEGEND --- */
 #map {
   flex-grow: 1; 
   width: 100%;
   z-index: 1;
 }
 
-/* --- 4. MAP LEGEND --- */
 #legend {
   position: fixed;
-  top: 150px; /* Increased to clear the header + filter bar */
+  top: 150px;
   right: 20px;
-  background: white;
+  background: var(--header-bg);
   padding: 15px;
   z-index: 1000;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   width: 160px;
-  color: #333 !important;
-}
-
-#legend strong {
-  display: block;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-  color: #000;
 }
 
 .legend-item {
@@ -121,282 +114,86 @@ body {
   align-items: center;
   margin-bottom: 6px;
   font-size: 13px;
+  color: var(--text-primary);
 }
 
 .legend-item i {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
+  width: 12px; height: 12px;
   border-radius: 50%;
   margin-right: 10px;
-  flex-shrink: 0;
 }
 
-/* --- 5. FLOATING ACTION BUTTON --- */
-#add-btn {
+/* --- 6. BUTTONS (UI TOOLS) --- */
+#map-tools {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  width: 60px;
-  height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+#add-btn, #locate-btn, #theme-btn {
+  width: 60px; height: 60px;
   border-radius: 50%;
-  background: #2ecc71;
-  color: white;
-  font-size: 30px;
   border: none;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
-  z-index: 1000;
-  transition: transform 0.2s ease;
-}
-
-#add-btn:hover {
-  transform: scale(1.1);
-}
-
-/* --- 6. POPUP FORM & MODAL --- */
-#form-popup {
-  position: fixed;
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%;
-  background: rgba(0,0,0,0.7); 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Highest priority */
-  transition: all 0.3s ease;
+  font-size: 24px;
+  transition: transform 0.2s;
 }
 
-.hidden { 
-  display: none !important; 
+#add-btn { background: #2ecc71; color: white; font-size: 30px; }
+#locate-btn, #theme-btn { background: var(--header-bg); color: var(--text-primary); border: 2px solid #2ecc71; }
+
+#add-btn:hover, #locate-btn:hover, #theme-btn:hover { transform: scale(1.1); }
+
+/* --- 7. FORMS & SPINNER --- */
+#form-popup {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999;
 }
 
 .form-content {
-  background: white;
+  background: var(--header-bg);
   padding: 30px;
-  border-radius: 16px; 
-  width: 90%;
-  max-width: 420px;
-  position: relative;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-  color: #333;
+  border-radius: 16px;
+  width: 90%; max-width: 420px;
+  color: var(--text-primary);
 }
 
-.form-content h2 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  font-size: 24px;
-  color: #2c3e50;
-}
-
-.form-content p {
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: #7f8c8d;
-  line-height: 1.4;
-}
-
-/* Make all inputs/selects look identical */
-.form-content input, 
-.form-content select {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 15px;
-  background-color: #f9f9f9;
-  box-sizing: border-box; 
-  transition: border-color 0.2s;
-}
-
-.form-content input:focus, 
-.form-content select:focus {
-  outline: none;
-  border-color: #2ecc71;
-  background-color: #fff;
-}
-
-.close {
-  position: absolute;
-  top: 15px; 
-  right: 20px;
-  font-size: 28px;
-  cursor: pointer;
-  color: #bdc3c7;
-  transition: color 0.2s;
-}
-
-.close:hover {
-  color: #e74c3c;
-}
-
-/* Button Layout */
-.button-group {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-#cancel-btn {
-  flex: 1;
-  padding: 14px;
-  background: #ecf0f1;
-  color: #7f8c8d;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#submit-btn {
-  flex: 2;
-  padding: 14px;
-  background: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
-  transition: all 0.2s;
-}
-
-#submit-btn:hover {
-  background: #27ae60;
-  transform: translateY(-1px);
-}
-
-/* --- 8. MOBILE OPTIMIZATIONS --- */
-/* This triggers for any screen narrower than 768px (tablets and phones) */
-@media (max-width: 768px) {
-  #legend {
-    display: none !important;
-  }
-
-  /* Optional: Make the header text a bit smaller so it fits better on mobile */
-  #site-header h1 {
-    font-size: 18px;
-  }
-  
-  #site-header p {
-    font-size: 12px;
-  }
-
-  /* Move the search bar slightly so it's not hugging the edge on mobile */
-  .leaflet-control-geocoder {
-    margin-top: 10px !important;
-    margin-left: 10px !important;
-  }
-}
-
-#filter-bar {
-  padding: 10px;
-  background: white;
-  display: flex;
-  gap: 8px;
-  overflow-x: auto; /* Allows scrolling on mobile if there are many categories */
-  white-space: nowrap;
-  border-bottom: 1px solid #eee;
-  z-index: 1001;
-}
-
-/* Hide scrollbar for a cleaner look */
-#filter-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.filter-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-  background: #f9f9f9;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.filter-btn:hover {
-  background: #f0f0f0;
-}
-
-.filter-btn.active {
-  background: #2ecc71; /* Matches your sustainability green */
-  color: white;
-  border-color: #2ecc71;
-}
-
-#locate-btn {
-  position: fixed;
-  bottom: 100px; /* Sits 70px above the Add button */
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: white; /* White background makes the target pop */
-  color: #2c3e50;
-  font-size: 24px;
-  border: 2px solid #2ecc71;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-#locate-btn:hover {
-  transform: scale(1.1);
-  background: #f9f9f9;
-}
-
-/* Customizing the Leaflet Popup container */
-.leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  padding: 5px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.leaflet-popup-content {
-  margin: 15px;
-  line-height: 1.5;
-}
+.hidden { display: none !important; }
 
 #loader-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; 
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--bg-color);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  z-index: 9999;
   transition: opacity 0.5s ease;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
+  width: 50px; height: 50px;
   border: 5px solid #f3f3f3;
-  border-top: 5px solid #2ecc71; 
+  border-top: 5px solid #2ecc71;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 15px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+#loader-container.fade-out { opacity: 0; pointer-events: none; }
 
-#loader-container.fade-out {
-  opacity: 0;
-  pointer-events: none; 
+/* --- 8. MOBILE --- */
+@media (max-width: 768px) {
+  #legend { display: none !important; }
+  #site-header h1 { font-size: 18px; }
+  #map-tools { right: 15px; bottom: 15px; }
 }
