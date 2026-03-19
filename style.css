@@ -164,6 +164,11 @@ body {
   appearance: none; -webkit-appearance: none;
 }
 
+.checkbox-group input[type="checkbox"] {
+  -webkit-appearance: checkbox !important;
+  appearance: checkbox !important;
+}
+
 .checkbox-group {
   display: flex;
   align-items: center;
