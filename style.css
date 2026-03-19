@@ -281,3 +281,28 @@ body {
   color: white;
   border-color: #2ecc71;
 }
+
+#locate-btn {
+  position: fixed;
+  bottom: 100px; /* Sits 70px above the Add button */
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white; /* White background makes the target pop */
+  color: #2c3e50;
+  font-size: 24px;
+  border: 2px solid #2ecc71;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+#locate-btn:hover {
+  transform: scale(1.1);
+  background: #f9f9f9;
+}
