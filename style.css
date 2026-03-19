@@ -99,14 +99,25 @@ body {
 
 #legend {
   position: fixed;
-  top: 150px;
+  top: 150px; 
   right: 20px;
-  background: var(--header-bg);
-  padding: 15px;
+  background: var(--header-bg); /* Use the theme variable */
+  padding: 18px 15px; /* Increased top/bottom padding for more room */
   z-index: 1000;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  width: 160px;
+  width: 170px; /* Widened slightly for better text fit */
+}
+
+#legend strong {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 15px; /* Pushes the legend items down further */
+  border-bottom: 1px solid var(--border-color); /* Matches your theme border */
+  padding-bottom: 8px; /* Adds space between the text and the line */
+  color: var(--text-primary);
+  font-size: 15px;
+  letter-spacing: 0.5px;
 }
 
 .legend-item {
@@ -122,6 +133,8 @@ body {
   border-radius: 50%;
   margin-right: 10px;
 }
+
+
 
 /* --- 6. BUTTONS (UI TOOLS) --- */
 #map-tools {
