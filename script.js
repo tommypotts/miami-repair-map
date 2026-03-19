@@ -1,9 +1,25 @@
 // --- 1. INITIALIZE MAP ---
 const map = L.map('map').setView([25.7617, -80.1918], 13);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+// Assign the layer to window.baseTileLayer so the toggle function can find it
+window.baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; OpenStreetMap &copy; CARTO'
 }).addTo(map);
+
+// --- THE THEME MEMORY CHECK ---
+// Run this immediately to prevent the 'white flash'
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  const darkTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png';
+  window.baseTileLayer.setUrl(darkTiles);
+  
+  // Update the button icon to a sun since it's already dark
+  // We'll wrap this in a timeout to make sure the HTML is ready
+  setTimeout(() => {
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) themeBtn.innerText = "☀️";
+  }, 100);
+}
 
 map.whenReady(function() {
   if (typeof L.Control.Geocoder !== 'undefined') {
@@ -113,13 +129,13 @@ async function loadMarkers(categoryFilter = 'All') {
 
       markerClusterGroup.addLayer(marker);
     }
-    if (loader) {
+  });
+}
+ if (loader) {
     loader.classList.add('fade-out');
     // Optional: Remove it from the DOM entirely after the fade animation
     setTimeout(() => { loader.style.display = 'none'; }, 500);
   }
-  });
-}
 
 // Function to handle the button clicks
 function filterCategory(cat) {
