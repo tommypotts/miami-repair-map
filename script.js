@@ -78,7 +78,10 @@ map.addLayer(markerClusterGroup);
 // --- 4. DATA LOADING ---
 async function loadMarkers(categoryFilter = 'All') {
   const loader = document.getElementById('loader-container');
-  if (loader) loader.classList.remove('fade-out');
+  if (loader) {
+    loader.style.display = 'flex'; // Make sure it's visible while loading
+    loader.classList.remove('fade-out');
+  }
   
   markerClusterGroup.clearLayers();
 
@@ -112,7 +115,6 @@ async function loadMarkers(categoryFilter = 'All') {
           <p style="margin: 5px 0;">📍 ${shop.is_mobile ? '<strong>Servicing:</strong> ' : ''}${shop.address}</p>
           ${shop.phone ? `<p style="margin: 5px 0;">📞 <a href="tel:${shop.phone}">${shop.phone}</a></p>` : ''}
           ${shop.website ? `<p style="margin: 5px 0;">🌐 <a href="${shop.website}" target="_blank">Visit Website</a></p>` : ''}
-          
           <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;">
             <a href="https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.long}" 
                target="_blank" 
@@ -130,12 +132,13 @@ async function loadMarkers(categoryFilter = 'All') {
       markerClusterGroup.addLayer(marker);
     }
   });
-}
- if (loader) {
+  if (loader) {
     loader.classList.add('fade-out');
-    // Optional: Remove it from the DOM entirely after the fade animation
-    setTimeout(() => { loader.style.display = 'none'; }, 500);
+    setTimeout(() => { 
+      loader.style.display = 'none'; 
+    }, 500);
   }
+} 
 
 // Function to handle the button clicks
 function filterCategory(cat) {
