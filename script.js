@@ -29,19 +29,19 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 function getIcon(category, isMobile) {
   let color = 'blue';
   
-  // If it's a mobile service, we use Grey to distinguish it from storefronts
   if (isMobile) {
-    color = 'grey';
+    color = 'grey'; // Grey is now strictly for mobile services
   } else {
     const cat = category ? category.toLowerCase() : 'other';
+    
     if (cat === 'electronics') color = 'red';
     else if (cat === 'appliances') color = 'orange';
     else if (cat === 'bikes') color = 'blue';
     else if (cat === 'clothing') color = 'violet';
     else if (cat === 'footwear') color = 'green';
-    else if (cat === 'furniture') color = 'grey'; 
     else if (cat === 'jewelry') color = 'gold';   
-    else color = 'black';
+    else if (cat === 'furniture') color = 'black';
+    else color = 'yellow'; // 'Other' moves to Yellow
   }
 
   return new L.Icon({
