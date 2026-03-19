@@ -66,9 +66,15 @@ async function loadMarkers() {
     return;
   }
 
+  // 1. Create a Marker Cluster Group
+  const markers = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true, // This fans them out when you click the cluster
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true
+  });
+
   data.forEach(shop => {
     if (shop.lat && shop.long) {
-      // Add a special badge for mobile services
       const mobileBadge = shop.is_mobile 
         ? `<span style="background: #34495e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block; margin-bottom: 5px;">MOBILE SERVICE</span>` 
         : '';
@@ -84,11 +90,17 @@ async function loadMarkers() {
         </div>
       `;
 
-      L.marker([shop.lat, shop.long], { icon: getIcon(shop.category, shop.is_mobile) })
-        .addTo(map)
+      // 2. Create the marker
+      const marker = L.marker([shop.lat, shop.long], { icon: getIcon(shop.category, shop.is_mobile) })
         .bindPopup(popupContent);
+
+      // 3. Add the marker to the Cluster Group instead of the map
+      markers.addLayer(marker);
     }
   });
+
+  // 4. Finally, add the entire group to the map
+  map.addLayer(markers);
 }
 
 // --- 5. FORM SUBMISSION ---
