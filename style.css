@@ -1,39 +1,51 @@
 /* --- 1. GLOBAL LAYOUT --- */
-
 :root {
   --bg-color: #f0f0f0;
   --header-bg: #ffffff;
   --text-primary: #2c3e50;
   --text-secondary: #7f8c8d;
-  --card-bg: #ffffff;
   --border-color: #eee;
 }
 
-/* When the 'dark-mode' class is added to the body, these take over */
 body.dark-mode {
   --bg-color: #1a1a1a;
-  --header-bg: #2c3e50;
+  --header-bg: #262626; /* Darker header */
   --text-primary: #ecf0f1;
   --text-secondary: #bdc3c7;
-  --card-bg: #2c3e50;
   --border-color: #444;
 }
 
-/* Update your existing styles to use these variables */
 body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* USE THE VARIABLES HERE */
   background: var(--bg-color);
   color: var(--text-primary);
 }
 
-#site-header, #filter-bar, .form-content, #legend {
-  background: var(--header-bg);
+#site-header {
+  background: var(--header-bg); /* Use variable */
+  padding: 15px 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1001;
+  border-bottom: 3px solid #2ecc71;
+}
+
+#filter-bar {
+  background: var(--header-bg); /* Use variable */
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
   border-color: var(--border-color);
 }
 
-#site-header p, .form-content p {
-  color: var(--text-secondary);
+#legend, .form-content {
+  background: var(--header-bg) !important;
+  color: var(--text-primary) !important;
 }
+
 body, html {
   margin: 0;
   padding: 0;
