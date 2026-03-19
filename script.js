@@ -96,14 +96,13 @@ async function loadMarkers(categoryFilter = 'All') {
     return;
   }
 
-  // --- THE COUNTER LOGIC ---
+  // Update Counter
   if (countDisplay) {
     countDisplay.innerText = data.length;
   }
 
   data.forEach(shop => {
     if (shop.lat && shop.long) {
-      // Construction of the Popup Content
       const mobileBadge = shop.is_mobile 
         ? `<span style="background: #34495e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block; margin-bottom: 5px;">MOBILE SERVICE</span>` 
         : '';
@@ -256,5 +255,4 @@ async function submitService() {
   }
 }
 
-// Start initial load
 loadMarkers();
