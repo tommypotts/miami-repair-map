@@ -192,25 +192,54 @@ function toggleForm() {
 
 // --- 7. GEOLOCATION FUNCTIONS ---
 
+// We create these variables at the top so the whole script can "see" them
+let userMarker = null;
+let userCircle = null;
+let isLocating = false;
+
 function locateUser() {
-  // This triggers the browser's "Allow Location Access" popup
-  map.locate({ setView: true, maxZoom: 16 });
+  const locateBtn = document.getElementById('locate-btn');
+
+  if (isLocating) {
+    // --- TOGGLE OFF ---
+    if (userMarker) map.removeLayer(userMarker);
+    if (userCircle) map.removeLayer(userCircle);
+    
+    isLocating = false;
+    locateBtn.style.background = "white"; // Reset button color
+    locateBtn.innerText = "🎯"; // Reset icon
+    
+    // Optional: Fly back to the main Miami view
+    map.setView([25.7617, -80.1918], 13); 
+  } else {
+    // --- TOGGLE ON ---
+    map.locate({ setView: true, maxZoom: 16 });
+    // Note: 'isLocating' becomes true inside the 'locationfound' event below
+  }
 }
 
-// What happens when the location is found
 map.on('locationfound', function(e) {
   const radius = e.accuracy / 2;
+  const locateBtn = document.getElementById('locate-btn');
 
-  // Add a marker to show where the user is
-  L.marker(e.latlng).addTo(map)
-    .bindPopup("You are within " + radius.toFixed(0) + " meters of this point").openPopup();
+  // If a marker already exists (from a previous click), remove it first
+  if (userMarker) map.removeLayer(userMarker);
+  if (userCircle) map.removeLayer(userCircle);
 
-  // Add a blue circle to show the 'accuracy' zone
-  L.circle(e.latlng, radius).addTo(map);
+  // Create the new marker and circle
+  userMarker = L.marker(e.latlng).addTo(map)
+    .bindPopup("You are here").openPopup();
+    
+  userCircle = L.circle(e.latlng, radius).addTo(map);
+
+  // Update State
+  isLocating = true;
+  locateBtn.style.background = "#2ecc71"; // Turn button green to show it's "Active"
+  locateBtn.style.color = "white";
 });
 
-// What happens if the user says "No" or it fails
 map.on('locationerror', function(e) {
+  isLocating = false;
   alert("Location access denied. Please enable GPS to find shops near you!");
 });
 
