@@ -306,3 +306,15 @@ body {
   transform: scale(1.1);
   background: #f9f9f9;
 }
+
+/* Customizing the Leaflet Popup container */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.leaflet-popup-content {
+  margin: 15px;
+  line-height: 1.5;
+}
