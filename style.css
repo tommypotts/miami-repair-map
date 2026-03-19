@@ -245,3 +245,39 @@ body {
     margin-left: 10px !important;
   }
 }
+
+#filter-bar {
+  padding: 10px;
+  background: white;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto; /* Allows scrolling on mobile if there are many categories */
+  white-space: nowrap;
+  border-bottom: 1px solid #eee;
+  z-index: 1001;
+}
+
+/* Hide scrollbar for a cleaner look */
+#filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background: #f0f0f0;
+}
+
+.filter-btn.active {
+  background: #2ecc71; /* Matches your sustainability green */
+  color: white;
+  border-color: #2ecc71;
+}
