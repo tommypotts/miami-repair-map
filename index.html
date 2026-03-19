@@ -90,35 +90,39 @@
       <h2>Add Repair Service</h2>
       <p>Help the Miami community find local fixers.</p>
 
-      <form id="repair-form">
+    <form id="repair-form">
+      <div class="input-row">
         <input type="text" id="shopName" placeholder="Shop Name">
-      
         <select id="shopCategory">
-          <option value="" disabled selected>Select a Category</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Appliances">Appliances</option>
-          <option value="Bikes">Bikes</option>
-          <option value="Clothing">Clothing</option>
-          <option value="Furniture">Furniture</option>
-          <option value="Footwear">Footwear</option>
-          <option value="Jewelry">Jewelry</option>
-          <option value="Other">Other</option>
-        </select>
+        <option value="" disabled selected>Category</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Appliances">Appliances</option>
+        <option value="Bikes">Bikes</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Footwear">Footwear</option>
+        <option value="Jewelry">Jewelry</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
 
-        <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">
-          <input type="checkbox" id="isMobile" style="width: auto; margin: 0;">
-          <label for="isMobile" style="font-size: 14px; color: #333;">This is a mobile/traveling service</label>
-        </div>
-        
-        <input type="text" id="shopAddress" placeholder="Full Address">
-        <input type="text" id="shopPhone" placeholder="Phone Number (Optional)">
-        <input type="text" id="shopWebsite" placeholder="Website URL (Optional)">
-      
-        <div class="button-group">
-          <button id="cancel-btn" type="button" onclick="toggleForm()">Back</button>
-          <button id="submit-btn" type="button" onclick="submitService()">Submit</button>
-        </div>
-    </form> 
+   <div class="checkbox-group">
+      <input type="checkbox" id="isMobile">
+      <label for="isMobile" style="font-size: 14px;">Mobile/Traveling service</label>
+  </div>
+  
+    <input type="text" id="shopAddress" placeholder="Full Address">
+
+  <div class="input-row">
+    <input type="text" id="shopPhone" placeholder="Phone (Optional)">
+    <input type="text" id="shopWebsite" placeholder="Website (Optional)">
+  </div>
+
+  <div class="button-group">
+    <button id="cancel-btn" type="button" onclick="toggleForm()">Back</button>
+    <button id="submit-btn" type="button" onclick="submitService()">Submit</button>
+  </div>
+</form>
     </div>
   </div>
 
