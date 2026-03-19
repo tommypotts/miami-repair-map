@@ -222,3 +222,26 @@ body {
   background: #27ae60;
   transform: translateY(-1px);
 }
+
+/* --- 8. MOBILE OPTIMIZATIONS --- */
+/* This triggers for any screen narrower than 768px (tablets and phones) */
+@media (max-width: 768px) {
+  #legend {
+    display: none !important;
+  }
+
+  /* Optional: Make the header text a bit smaller so it fits better on mobile */
+  #site-header h1 {
+    font-size: 18px;
+  }
+  
+  #site-header p {
+    font-size: 12px;
+  }
+
+  /* Move the search bar slightly so it's not hugging the edge on mobile */
+  .leaflet-control-geocoder {
+    margin-top: 10px !important;
+    margin-left: 10px !important;
+  }
+}
