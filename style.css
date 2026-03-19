@@ -173,7 +173,7 @@ body {
   cursor: pointer;
 }
 
-..checkbox-group input[type="checkbox"] {
+.checkbox-group input[type="checkbox"] {
   -webkit-appearance: checkbox !important;
   appearance: checkbox !important;
   width: 18px;
