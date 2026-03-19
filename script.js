@@ -37,9 +37,9 @@ function getIcon(category) {
   else if (cat === 'appliances') color = 'orange';
   else if (cat === 'bikes') color = 'blue';
   else if (cat === 'clothing') color = 'violet';
-  else if (cat === 'furniture') color = 'brown';
   else if (cat === 'footwear') color = 'green';
-  else if (cat === 'jewelry') color = 'pink';
+  else if (cat === 'furniture') color = 'grey'; 
+  else if (cat === 'jewelry') color = 'gold';   
   else color = 'black';
 
   return new L.Icon({
