@@ -1,18 +1,28 @@
-body {
+/* --- 1. GLOBAL LAYOUT --- */
+body, html {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden; /* Prevents the whole page from scrolling */
+  overflow: hidden; 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f0f0;
+  color: #333;
 }
 
+/* --- 2. SITE HEADER --- */
 #site-header {
   background: white;
   padding: 15px 25px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1001; /* Stay above the map */
-  border-bottom: 3px solid #2ecc71;
+  z-index: 1001;
+  border-bottom: 3px solid #2ecc71; /* Green sustainability accent */
 }
 
 #site-header h1 {
@@ -30,13 +40,52 @@ body {
   color: #7f8c8d;
 }
 
-/* 3. The Map fills the remaining space */
+/* --- 3. MAP CONTAINER --- */
 #map {
   flex-grow: 1; 
   width: 100%;
   z-index: 1;
 }
-/* 2. The Floating Action Button */
+
+/* --- 4. MAP LEGEND --- */
+#legend {
+  position: fixed;
+  top: 90px; /* Adjusted to sit below the new header */
+  right: 20px;
+  background: white;
+  padding: 15px;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 160px;
+  color: #333 !important;
+}
+
+#legend strong {
+  display: block;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  color: #000;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.legend-item i {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+/* --- 5. FLOATING ACTION BUTTON --- */
 #add-btn {
   position: fixed;
   bottom: 30px;
@@ -50,10 +99,15 @@ body {
   border: none;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
-  z-index: 1000; /* Ensure it's above the map */
+  z-index: 1000;
+  transition: transform 0.2s ease;
 }
 
-/* 3. The Popup Background (The Dark Overlay) */
+#add-btn:hover {
+  transform: scale(1.1);
+}
+
+/* --- 6. POPUP FORM & MODAL --- */
 #form-popup {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -62,219 +116,6 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  transition: opacity 0.3s ease;
 }
 
-/* 4. Hide/Show logic */
-.hidden { display: none !important; }
-
-/* 5. The Actual Form Box */
-.form-content {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-}
-
-.form-content input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-sizing: border-box; /* Prevents input from overflowing */
-}
-
-#submit-btn {
-  width: 100%;
-  padding: 15px;
-  background: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.close {
-  position: absolute;
-  top: 10px; right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* Style for the new Back/Cancel button */
-#cancel-btn {
-  flex: 1; /* Makes both buttons equal width */
-  padding: 15px;
-  background: #ecf0f1;
-  color: #333;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#cancel-btn:hover {
-  background: #dcdde1;
-}
-
-/* Adjust the Submit button to share the row */
-#submit-btn {
-  flex: 2; /* Makes the Submit button slightly wider than 'Back' */
-  padding: 15px;
-  background: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Ensure the form-content has a nice shadow for depth */
-.form-content {
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-#legend {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: white;
-  padding: 15px;
-  z-index: 1000;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333 !important; /* Forces text to be dark gray */
-  width: 160px;
-}
-
-#legend strong {
-  display: block;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-  color: #000;
-}
-
-/* This is the secret for flush-left alignment */
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: #333;
-}
-
-.legend-item i {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  border-radius: 50%;
-  margin-right: 10px; /* Space between dot and text */
-  flex-shrink: 0; /* Prevents dot from squishing */
-}
-
-/* 1. Fix the "Add Repair Service" title visibility */
-.form-content h2 {
-  color: #333 !important; /* Forces dark gray text */
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-family: sans-serif;
-}
-
-.form-content p {
-  color: #666 !important;
-  margin-bottom: 20px;
-}
-
-/* 2. Make all boxes (inputs AND selects) the exact same size */
-.form-content input, 
-.form-content select {
-  width: 100%;             /* Fills the container */
-  padding: 12px;           /* Inner spacing */
-  margin: 8px 0;           /* Vertical spacing between boxes */
-  border: 1px solid #ccc;  /* Clean border */
-  border-radius: 6px;      /* Rounded corners */
-  font-size: 14px;
-  background-color: white;
-  color: #333;
-  
-  /* THIS IS THE MAGIC LINE */
-  box-sizing: border-box;  
-}
-
-/* 3. Style the "Back" and "Submit" buttons to match the height */
-#cancel-btn, #submit-btn {
-  padding: 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* Styling the search bar to match your clean UI */
-.leaflet-control-geocoder {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  border: none !important;
-  margin-top: 20px !important;
-  margin-left: 20px !important;
-}
-
-.leaflet-control-geocoder-icon {
-  border-radius: 8px !important;
-}
-
-/* Manual styling for the Geocoder search icon */
-.leaflet-control-geocoder-icon {
-  background-image: url("https://unpkg.com/leaflet-control-geocoder/dist/images/geocoder.png") !important;
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 30px;
-  height: 30px;
-  display: block;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-  cursor: pointer;
-}
-
-/* Adjust position if it's hiding behind the legend */
-.leaflet-top.leaflet-left {
-  margin-top: 10px;
-  margin-left: 10px;
-}
-
-/* 1. Force the magnifying glass using an SVG (No external image needed!) */
-.leaflet-control-geocoder-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-color: white !important;
-  width: 30px !important;
-  height: 30px !important;
-  display: block !important;
-  border-radius: 4px !important;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.4) !important;
-  cursor: pointer !important;
-}
-
-/* 2. Ensure the container is visible and not hidden behind anything */
-.leaflet-control-geocoder {
-  border: none !important;
-  background: white !important;
-  z-index: 1000 !important;
-}
-
-.leaflet-control-geocoder {
-  margin-top: 15px !important; /* Adjust this so it looks balanced below the header */
-}
-
-@media (max-width: 600px) {
-  #legend {
-    display: none; /* Or make it a small toggle button */
-  }
-}
+.hidden {
