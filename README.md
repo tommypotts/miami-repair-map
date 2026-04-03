@@ -1,5 +1,5 @@
 # Miami Repair Map
-
+![Miami Repair Map](map-preview.png)
 **Live site:** [tommypotts.github.io/miami-repair-map](https://tommypotts.github.io/miami-repair-map/)
 
 ## Overview
